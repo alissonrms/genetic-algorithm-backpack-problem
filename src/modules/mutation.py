@@ -34,7 +34,11 @@ class RandomMutationStrategy(MutationStrategy):
         for chromosome in population:
             for i in range(len(chromosome)):
                 if random.random() < self.mutationRate:
-                    chromosome[i] = 1 - chromosome[i]
+                    if(random.random() > 0.1):
+                        chromosome[i] = 0
+                    else:
+                        chromosome[i] = 1
+
 
         self.checkToChangeMutationRate(current_best_solution)
         return population
@@ -50,7 +54,10 @@ class SelectiveMutationStrategy(MutationStrategy):
         for individual in selected_individuals:
             for i in range(len(individual)):
                 if random.random() < self.mutationRate:
-                    individual[i] = 1 - individual[i]
+                    if(random.random() > 0.1):
+                        individual[i] = 0
+                    else:
+                        individual[i] = 1
 
         self.checkToChangeMutationRate(current_best_solution)
         return population

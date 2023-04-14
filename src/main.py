@@ -15,12 +15,12 @@ items = readData('items.csv')
 BACKPACK_MAX_WEIGHT = 30
 NUM_ITEMS = len(items)
 MAX_GENERATIONS = 10
-STOP_TIME = 60 * 10
-POPULATION_SIZE = 50
-INITIAL_MUTATION_RATE = 0.001
+STOP_TIME = 60 * 30
+POPULATION_SIZE = 200
+INITIAL_MUTATION_RATE = 0.002
 
 EVALUATOR = Evaluator(items, BACKPACK_MAX_WEIGHT)
-SELECTION_STRATEGY = selectionTypes['RANKING'](EVALUATOR, POPULATION_SIZE)
+SELECTION_STRATEGY = selectionTypes['ROULETTE'](EVALUATOR, POPULATION_SIZE)
 CROSSOVER_STRATEGY = crossoverTypes['TWO_POINT'](NUM_ITEMS)
 MUTATION_STRATEGY = mutationTypes['RANDOM_BIT_BIT'](
     INITIAL_MUTATION_RATE, NUM_ITEMS, EVALUATOR)
@@ -53,29 +53,32 @@ programStartTime = time.time()
 fitness_history = []
 best_solution = max(POPULATION.individuals, key=EVALUATOR.evaluate)
 
+bestSolutionCounter = 0
 STOP_STRATEGY.reset()
 if __name__ == '__main__':
     while (STOP_STRATEGY.isToContinue()):
         parents = select_parents_parallel()
         children = crossParents(parents)
+        if(bestSolutionCounter == 10):
+            POPULATION.individuals = MUTATION_STRATEGY.mutate(POPULATION.individuals, EVALUATOR.evaluate(best_solution)) 
+            bestSolutionCounter = 0 
+        else:
+            children = MUTATION_STRATEGY.mutate(children, EVALUATOR.evaluate(best_solution))  
+            bestSolutionCounter += 1
+            
         POPULATION.adjustPopulation(children)
-        POPULATION.individuals = MUTATION_STRATEGY.mutate(POPULATION.individuals, EVALUATOR.evaluate(best_solution))
         POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals(EVALUATOR.evaluate(best_solution))
         SELECTION_STRATEGY.population_size = POPULATION_SIZE
 
         current_best_solution = max(POPULATION.individuals, key=EVALUATOR.evaluate)
         fitness_history.append(EVALUATOR.evaluate(current_best_solution))
         
-        if(EVALUATOR.evaluate(current_best_solution) > EVALUATOR.evaluate(best_solution)):
-            print('trocando melhor solução')
+        if(EVALUATOR.evaluate(current_best_solution) != EVALUATOR.evaluate(best_solution)):
             best_solution = current_best_solution
-        
-        print(f"Nessa rodada: {EVALUATOR.evaluate(current_best_solution)}")
-        print(f"Maior: {EVALUATOR.evaluate(best_solution)}")
-        time.sleep(5)
+            bestSolutionCounter = 0
             
-        print(f"Progresso {STOP_STRATEGY.getProgressPercentage()}%")
-        print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
+        # print(f"Progresso {STOP_STRATEGY.getProgressPercentage()}%")
+        # print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
 
     # Plotar o gráfico de linha
     plt.plot(fitness_history)
