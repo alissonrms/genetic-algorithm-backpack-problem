@@ -15,7 +15,7 @@ class MutationStrategy:
         if current_best_solution <= self.bestSolutionBuffer:
             self.sameSolutionCounter += 1
             if self.sameSolutionCounter >= 10:
-                self.mutationRate = min(self.mutationRate + 0.001, 0.01)
+                self.mutationRate = min(self.mutationRate + 0.01, 0.1)
                 self.sameSolutionCounter = 0
         else:
             self.mutationRate = self.initialMutationRate
