@@ -1,5 +1,4 @@
 import random
-import time
 
 
 class CrossoverStrategy:
@@ -36,7 +35,7 @@ class TwoPointStrategy(CrossoverStrategy):
         child2 = parent2[:crossover_point1] + \
             parent1[crossover_point1:crossover_point2] + \
             parent2[crossover_point2:]
-        return child1, child2
+        return [child1, child2]
 
 
 crossoverTypes = {

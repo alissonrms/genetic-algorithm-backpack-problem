@@ -21,9 +21,10 @@ class MutationStrategy:
             self.mutationRate = self.initialMutationRate
             self.sameSolutionCounter = 0
             self.bestSolutionBuffer = current_best_solution
-
+    
     def mutate(self):
         pass
+    
 
 
 class RandomMutationStrategy(MutationStrategy):
