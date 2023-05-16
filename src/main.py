@@ -1,3 +1,4 @@
+import random
 import time
 import matplotlib.pyplot as plt
 import multiprocessing as mp
@@ -17,7 +18,7 @@ NUM_ITEMS = len(items)
 MAX_GENERATIONS = 10
 STOP_TIME = 60 * 20
 POPULATION_SIZE = 200
-INITIAL_MUTATION_RATE = 0.01
+INITIAL_MUTATION_RATE = 0.02
 
 EVALUATOR = Evaluator(items, BACKPACK_MAX_WEIGHT)
 SELECTION_STRATEGY = selectionTypes['ROULETTE'](EVALUATOR, POPULATION_SIZE)
@@ -29,8 +30,8 @@ STOP_STRATEGY = stopTypes['TIME'](MAX_GENERATIONS, STOP_TIME)
 POPULATION = Population(POPULATION_SIZE, NUM_ITEMS,
                         EVALUATOR, MAINTENANCE_STRATEGY)
 
-K = 3
-Y = 10
+K = 10
+Y = 20
 M = 80
 
 
@@ -69,16 +70,13 @@ def verificar_convergencia():
         j = 1
         while j <= numero_conjuntos:
             if distancia_individuos(POPULATION.individuals[i], individuos_grupos[j - 1]) < Y:
-                # Descarta o indivíduo
-                break
+                # Incrementa o número de indivíduos do grupo j
+                quantidade_individuos_grupos[j - 1] += 1
 
-            # Incrementa o número de indivíduos do grupo j
-            quantidade_individuos_grupos[j - 1] += 1
-
-            if quantidade_individuos_grupos[j - 1] > M:
-                # Há convergência
-                print(f"Há convergência por muitos individuos no mesmo conjunto")
-                return True
+                if quantidade_individuos_grupos[j - 1] > M:
+                    # Há convergência
+                    print(f"Há convergência por muitos individuos no mesmo conjunto")
+                    return True
 
             j += 1
 
@@ -96,6 +94,7 @@ def verificar_convergencia():
         return True
     else:
         # Não há convergência
+        print(quantidade_individuos_grupos)
         print(f"Não há convergência")
         return False
 
@@ -122,8 +121,6 @@ if __name__ == '__main__':
             children, EVALUATOR.evaluate(best_solution))
 
         POPULATION.adjustPopulation(children)
-        POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals(
-            EVALUATOR.evaluate(best_solution))
         SELECTION_STRATEGY.population_size = POPULATION_SIZE
 
         current_best_solution = max(
@@ -138,8 +135,12 @@ if __name__ == '__main__':
         print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
         if (len(fitness_history) % 10 == 0):
             if (verificar_convergencia()):
-                POPULATION.individuals = MUTATION_STRATEGY.mutate(
-                    POPULATION.individuals, EVALUATOR.evaluate(best_solution))
+                if(random.randint(1, 10) <= 5):
+                    POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals(
+                        EVALUATOR.evaluate(best_solution))
+                else:
+                    POPULATION.individuals = MUTATION_STRATEGY.mutate(
+                        POPULATION.individuals, EVALUATOR.evaluate(best_solution))
 
     # Plotar o gráfico de linha
     plt.plot(fitness_history)

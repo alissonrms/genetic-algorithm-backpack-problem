@@ -30,19 +30,13 @@ class Population:
             self.individuals, children)
         self.generations += 1
 
-    def checkToIncreaseRandomIndividuals(self, new_best_solution):
-        if new_best_solution == self.bestSolution:
-            self.sameSolutionCounter += 1
-            if self.sameSolutionCounter >= 10 and self.population_size < 1000:
+    def checkToIncreaseRandomIndividuals(self):
+        if self.population_size < 1000:
                 print('Aumentando população')
                 self.population_size += 200
                 self.maintenance_strategy.population_size = self.population_size
                 self.individuals = self.maintenance_strategy.execute(
                     self.individuals, self.generateRandomIdividuals(200))
-                self.sameSolutionCounter = 0
-        else:
-            self.sameSolutionCounter = 0
-            self.bestSolution = new_best_solution
 
         return self.population_size
 
