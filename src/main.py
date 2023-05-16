@@ -32,7 +32,7 @@ POPULATION = Population(POPULATION_SIZE, NUM_ITEMS,
 
 K = 10
 Y = 20
-M = 80
+M = 2
 
 
 def select_parents_parallel():
@@ -114,6 +114,8 @@ fitness_history = []
 best_solution = max(POPULATION.individuals, key=EVALUATOR.evaluate)
 
 bestSolutionCounter = 0
+increasePopulationNextTime = False
+
 STOP_STRATEGY.reset()
 if __name__ == '__main__':
     while (STOP_STRATEGY.isToContinue()):
@@ -137,11 +139,14 @@ if __name__ == '__main__':
         print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
         if (len(fitness_history) % 10 == 0):
             if (verificar_convergencia()):
-                if(random.randint(1, 10) <= 5):
+                if(increasePopulationNextTime):
                     POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals()
+                    SELECTION_STRATEGY.population_size = POPULATION_SIZE
+                    increasePopulationNextTime = False
                 else:
                     POPULATION.individuals = MUTATION_STRATEGY.mutate(
                         POPULATION.individuals, EVALUATOR.evaluate(best_solution))
+                    increasePopulationNextTime = True
 
     # Plotar o gráfico de linha
     plt.plot(fitness_history)
