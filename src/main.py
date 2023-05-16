@@ -138,8 +138,7 @@ if __name__ == '__main__':
         if (len(fitness_history) % 10 == 0):
             if (verificar_convergencia()):
                 if(random.randint(1, 10) <= 5):
-                    POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals(
-                        EVALUATOR.evaluate(best_solution))
+                    POPULATION_SIZE = POPULATION.checkToIncreaseRandomIndividuals()
                 else:
                     POPULATION.individuals = MUTATION_STRATEGY.mutate(
                         POPULATION.individuals, EVALUATOR.evaluate(best_solution))
