@@ -12,13 +12,24 @@ class SelectionStrategy:
 
 class RouletteSelectionStrategy(SelectionStrategy):
     def selection(self, population):
-        fitness_scores = [self.evaluator.evaluate(
-            chromosome) for chromosome in population]
+        fitness_scores = []
+        for chromosome in population:
+            fitness_scores.append(self.evaluator.evaluate(chromosome))
+
         total_fitness = sum(fitness_scores)
-        probabilities = [score / total_fitness for score in fitness_scores]
+
+        probabilities = []
+        for score in fitness_scores:
+            probabilities.append(score / total_fitness)
+
         selected_indices = random.choices(
             range(self.population_size), weights=probabilities, k=2)
-        return [population[index] for index in selected_indices]
+        
+        individuals = []
+        for index in selected_indices:
+            individuals.append(population[index])
+
+        return individuals
 
 
 class RankingSelectionStrategy(SelectionStrategy):

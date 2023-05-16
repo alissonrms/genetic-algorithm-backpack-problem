@@ -1,4 +1,5 @@
 import random
+import time
 
 
 class CrossoverStrategy:
@@ -17,7 +18,8 @@ class OnePointStrategy(CrossoverStrategy):
         crossover_point = random.randint(1, self.num_chromosomes - 1)
         child1 = parent1[:crossover_point] + parent2[crossover_point:]
         child2 = parent2[:crossover_point] + parent1[crossover_point:]
-        return child1, child2
+
+        return [child1, child2]
 
 
 class TwoPointStrategy(CrossoverStrategy):

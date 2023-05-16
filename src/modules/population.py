@@ -21,7 +21,7 @@ class Population:
         population = []
         for _ in range(size):
             chromosome = random.choices(
-                [0, 1], weights=[0.98, 0.02], k=self.num_items)
+                [0, 1], weights=[0.96, 0.04], k=self.num_items)
             population.append(chromosome)
         return population
 
@@ -38,7 +38,7 @@ class Population:
                 self.population_size += 200
                 self.maintenance_strategy.population_size = self.population_size
                 self.individuals = self.maintenance_strategy.execute(
-                    self.individuals, self.generateRandomIdividuals(200))
+                    self.individuals, self.generateRandomIdividuals(100))
                 self.sameSolutionCounter = 0
         else:
             self.sameSolutionCounter = 0

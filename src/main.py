@@ -15,16 +15,16 @@ items = readData('items.csv')
 BACKPACK_MAX_WEIGHT = 30
 NUM_ITEMS = len(items)
 MAX_GENERATIONS = 10
-STOP_TIME = 60 * 30
+STOP_TIME = 60 * 10
 POPULATION_SIZE = 200
-INITIAL_MUTATION_RATE = 0.002
+INITIAL_MUTATION_RATE = 0.01
 
 EVALUATOR = Evaluator(items, BACKPACK_MAX_WEIGHT)
 SELECTION_STRATEGY = selectionTypes['ROULETTE'](EVALUATOR, POPULATION_SIZE)
-CROSSOVER_STRATEGY = crossoverTypes['TWO_POINT'](NUM_ITEMS)
+CROSSOVER_STRATEGY = crossoverTypes['ONE_POINT'](NUM_ITEMS)
 MUTATION_STRATEGY = mutationTypes['RANDOM_BIT_BIT'](
     INITIAL_MUTATION_RATE, NUM_ITEMS, EVALUATOR)
-MAINTENANCE_STRATEGY = maintenanceTypes['ELITISM']
+MAINTENANCE_STRATEGY = maintenanceTypes['REPLACEMENT']
 STOP_STRATEGY = stopTypes['TIME'](MAX_GENERATIONS, STOP_TIME)
 POPULATION = Population(POPULATION_SIZE, NUM_ITEMS,
                         EVALUATOR, MAINTENANCE_STRATEGY)
@@ -34,18 +34,23 @@ def select_parents_parallel():
     pool = mp.Pool(mp.cpu_count())
     parents = pool.map(SELECTION_STRATEGY.selection, [
                        POPULATION.individuals] * (POPULATION.population_size // 2))
+
+    parentsToReturn = []
+    for parent in parents:
+        parentsToReturn.append(parent[0])
+        parentsToReturn.append(parent[1])
+
     pool.close()
     pool.join()
-    return parents
+    return parentsToReturn
 
 
 def crossParents(parents):
     children = []
-    for parent1, parent2 in parents:
-        child1, child2 = CROSSOVER_STRATEGY.crossover(parent1, parent2)
+    for i in range(0, len(parents), 2):
+        child1, child2 = CROSSOVER_STRATEGY.crossover(parents[i], parents[i + 1])
         children.append(child1)
         children.append(child2)
-
     return children
 
 
@@ -77,8 +82,8 @@ if __name__ == '__main__':
             best_solution = current_best_solution
             bestSolutionCounter = 0
             
-        # print(f"Progresso {STOP_STRATEGY.getProgressPercentage()}%")
-        # print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
+        print(f"Progresso {STOP_STRATEGY.getProgressPercentage()}%")
+        print(f"Melhor Solução atual: {EVALUATOR.evaluate(best_solution)}")
 
     # Plotar o gráfico de linha
     plt.plot(fitness_history)
