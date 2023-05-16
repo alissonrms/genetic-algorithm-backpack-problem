@@ -77,6 +77,8 @@ def verificar_convergencia():
                     # Há convergência
                     print(f"Há convergência por muitos individuos no mesmo conjunto")
                     return True
+                
+                break
 
             j += 1
 
