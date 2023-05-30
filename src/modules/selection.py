@@ -1,10 +1,30 @@
 import random
+import time
+import logging
 
 
 class SelectionStrategy:
     def __init__(self, evaluator, population_size):
         self.evaluator = evaluator
         self.population_size = population_size
+        self.fitnessArray = []
+        self.probabilitiesArray = []
+        self.total_fitness = 0
+    
+    def updateFitnessArray(self, population):
+        fitness_scores = []
+        for chromosome in population:
+            fitness_scores.append(self.evaluator.evaluate(chromosome))
+            
+        self.fitnessArray = fitness_scores
+    
+    def updateTotalFitness(self):
+        self.total_fitness = sum(self.fitnessArray)
+        
+    def updateProbabilitiesArray(self):
+        self.probabilitiesArray = []
+        for score in self.fitnessArray:
+            self.probabilitiesArray.append(score / self.total_fitness)
     
     def selection(self):
         pass
@@ -12,18 +32,8 @@ class SelectionStrategy:
 
 class RouletteSelectionStrategy(SelectionStrategy):
     def selection(self, population):
-        fitness_scores = []
-        for chromosome in population:
-            fitness_scores.append(self.evaluator.evaluate(chromosome))
-
-        total_fitness = sum(fitness_scores)
-
-        probabilities = []
-        for score in fitness_scores:
-            probabilities.append(score / total_fitness)
-
         selected_indices = random.choices(
-            range(self.population_size), weights=probabilities, k=2)
+            range(self.population_size), weights=self.probabilitiesArray, k=2)
         
         individuals = []
         for index in selected_indices:

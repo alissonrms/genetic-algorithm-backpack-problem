@@ -33,10 +33,10 @@ class Population:
     def checkToIncreaseRandomIndividuals(self):
         if self.population_size < 1000:
                 print('Aumentando população')
-                self.population_size += 200
+                self.population_size += int(self.population_size * 0.5)
                 self.maintenance_strategy.population_size = self.population_size
                 self.individuals = self.maintenance_strategy.execute(
-                    self.individuals, self.generateRandomIdividuals(200))
+                    self.individuals, self.generateRandomIdividuals(int(self.population_size * 0.5)))
 
         return self.population_size
 
